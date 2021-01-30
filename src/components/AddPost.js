@@ -25,16 +25,18 @@ const AddPost = () => {
 			if (src === 'camera') {
 				ImagePicker.openCamera({
 					cropping: true,
+					includeBase64: true,
 				}).then((image) => {
-					setImageUri(image.path);
-					console.log(image.path);
+					setImageUri(`data:image/jpg;base64,${image.data}`);
+					console.log(`data:image/jpg;base64,${image.data}`);
 				});
 			} else {
 				ImagePicker.openPicker({
 					cropping: true,
+					includeBase64: true,
 				}).then((image) => {
-					setImageUri(image.path);
-					console.log(image.path);
+					setImageUri(`data:image/jpg;base64,${image.data}`);
+					console.log(`data:image/jpg;base64,${image.data}`);
 				});
 			}
 		} catch (err) {

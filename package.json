@@ -26,6 +26,7 @@
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.17.1",
+    "react-native-share": "^5.1.0",
     "react-native-typewriter": "^0.7.0",
     "react-native-vector-icons": "^8.0.0"
   },

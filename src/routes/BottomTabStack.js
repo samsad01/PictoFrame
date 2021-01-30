@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IoIcons from 'react-native-vector-icons/Ionicons';
-import FeedStack from './FeedStack';
-import AddPostStack from './AddPostStack';
-import ProfileStack from './ProfileStack';
+import Feed from './../components/Feed';
+import AddPost from './../components/AddPost';
+import Profile from './../components/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +16,7 @@ const BottomTabStack = () => {
 			}}>
 			<Tab.Screen
 				name="Home"
-				component={FeedStack}
+				component={Feed}
 				options={{
 					tabBarIcon: ({ color }) => (
 						<IoIcons name="home-outline" color={color} size={26} />
@@ -25,7 +25,7 @@ const BottomTabStack = () => {
 			/>
 			<Tab.Screen
 				name="Post"
-				component={AddPostStack}
+				component={AddPost}
 				options={{
 					tabBarIcon: ({ color }) => (
 						<IoIcons
@@ -38,7 +38,7 @@ const BottomTabStack = () => {
 			/>
 			<Tab.Screen
 				name="Profile"
-				component={ProfileStack}
+				component={Profile}
 				options={{
 					tabBarIcon: ({ color }) => (
 						<IoIcons
