@@ -8,10 +8,6 @@ import ProfileStack from './ProfileStack';
 const Tab = createBottomTabNavigator();
 
 const BottomTabStack = () => {
-	const tabBarListeners = ({ navigation, route }) => ({
-		tabPress: () => navigation.navigate(route.name),
-	});
-
 	return (
 		<Tab.Navigator
 			tabBarOptions={{
@@ -26,7 +22,6 @@ const BottomTabStack = () => {
 						<IoIcons name="home-outline" color={color} size={26} />
 					),
 				}}
-				listeners={tabBarListeners}
 			/>
 			<Tab.Screen
 				name="Post"

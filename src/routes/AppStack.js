@@ -5,6 +5,7 @@ import BottomTabStack from './BottomTabStack';
 import Login from '../components/Login';
 import Signin from '../components/Signin';
 import Signup from '../components/Signup';
+import Comments from './../components/Comments';
 
 const Stack = createStackNavigator();
 
@@ -16,11 +17,19 @@ const AppStack = () => {
 				initialRouteName="Login"
 				screenOptions={{
 					headerShown: false,
+					headerStyle: { backgroundColor: '#111' },
+					headerTintColor: '#fff',
+					headerTitleAlign: 'center',
 				}}>
 				<Stack.Screen name="Login" component={Login} />
 				<Stack.Screen name="Signin" component={Signin} />
 				<Stack.Screen name="Signup" component={Signup} />
 				<Stack.Screen name="Feed" component={BottomTabStack} />
+				<Stack.Screen
+					name="Comments"
+					component={Comments}
+					options={{ headerShown: true }}
+				/>
 			</Stack.Navigator>
 		</>
 	);

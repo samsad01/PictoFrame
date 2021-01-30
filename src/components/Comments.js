@@ -6,9 +6,11 @@ import {
 	SafeAreaView,
 	Dimensions,
 	ScrollView,
+	StatusBar,
 } from 'react-native';
-import { Avatar, ListItem } from 'react-native-elements';
+import { Avatar, ListItem, Input } from 'react-native-elements';
 import { formatDistanceToNowStrict } from 'date-fns';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 
 const dimensions = Dimensions.get('window');
 
@@ -35,6 +37,7 @@ const Comments = () => {
 
 	return (
 		<SafeAreaView style={styles.commentViewWrapper}>
+			<StatusBar hidden />
 			<ScrollView>
 				<ListItem containerStyle={styles.commentView} bottomDivider>
 					<Avatar
@@ -70,6 +73,15 @@ const Comments = () => {
 					</ListItem.Content>
 				</ListItem>
 			</ScrollView>
+			<View style={styles.postCommentView}>
+				<View style={styles.inputView}>
+					<Input placeholder="Add a comment" />
+				</View>
+				<View>
+					<AntIcon name="rightcircleo" size={30} color="#CCCCCC" />
+					<Text style={{ color: '#CCCCCC' }}>Post</Text>
+				</View>
+			</View>
 		</SafeAreaView>
 	);
 };
@@ -78,7 +90,7 @@ export default Comments;
 
 const styles = StyleSheet.create({
 	commentViewWrapper: {
-		height: dimensions.height,
+		height: '100%',
 		backgroundColor: '#111',
 	},
 	commentView: {
@@ -88,5 +100,15 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		width: '100%',
+	},
+	postCommentView: {
+		flexDirection: 'row',
+		paddingVertical: 2,
+		width: dimensions.width,
+		alignItems: 'center',
+		paddingHorizontal: 5,
+	},
+	inputView: {
+		width: '90%',
 	},
 });
