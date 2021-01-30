@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "679160405557",
+    "project_id": "pictoframe-be0ff",
+    "storage_bucket": "pictoframe-be0ff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679160405557:android:dfdf51debe2145513cdb7c",
+        "android_client_info": {
+          "package_name": "com.pictoframe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679160405557-mqjr8993h44kltsqcsg4od21mbjr00v7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoBfDJ6a_aEFi_XzzSaT0JWqpKjTHEAVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679160405557-mqjr8993h44kltsqcsg4od21mbjr00v7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
