@@ -1,29 +1,58 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Login from '../components/Login';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import BottomTabStack from './BottomTabStack';
+import Welcome from '../components/Welcome';
 import Signin from '../components/Signin';
 import Signup from '../components/Signup';
-import Feed from './../components/Feed';
+import Comments from './../components/Comments';
 
-const stack = createStackNavigator();
+const Stack = createStackNavigator();
 
+const getHeaderTitle = (route) => {
+	const routeName = getFocusedRouteNameFromRoute(route) ?? 'Pictoframe';
+	if (routeName === 'Feed') {
+		return 'Pictoframe';
+	} else if (routeName === 'Post') {
+		return 'Add a Post';
+	} else if (routeName === 'Profile') {
+		return 'Profile';
+	} else {
+		return routeName;
+	}
+};
 const AppStack = () => {
 	return (
 		<>
-			<StatusBar hidden={true} />
-			<stack.Navigator
-				initialRouteName="Login"
-				screenOptions={{ headerShown: false }}>
-				<stack.Screen name="Login" component={Login} />
-				<stack.Screen name="Signin" component={Signin} />
-				<stack.Screen name="Signup" component={Signup} />
-				<stack.Screen name="Feed" component={Feed} />
-			</stack.Navigator>
+			<StatusBar hidden />
+			<Stack.Navigator
+				initialRouteName="Welcome"
+				screenOptions={{
+					headerShown: false,
+					headerStyle: { backgroundColor: '#111' },
+					headerTintColor: '#fff',
+					headerTitleAlign: 'center',
+				}}>
+				<Stack.Screen name="Welcome" component={Welcome} />
+				<Stack.Screen name="Signin" component={Signin} />
+				<Stack.Screen name="Signup" component={Signup} />
+				<Stack.Screen
+					name="Feed"
+					component={BottomTabStack}
+					options={({ route }) => ({
+						headerShown: true,
+						headerTitle: getHeaderTitle(route),
+					})}
+				/>
+				<Stack.Screen
+					name="Comments"
+					component={Comments}
+					options={{ headerShown: true }}
+				/>
+			</Stack.Navigator>
 		</>
 	);
 };
 
 export default AppStack;
-
-const styles = StyleSheet.create({});
