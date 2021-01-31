@@ -8,8 +8,22 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import TypeWriter from 'react-native-typewriter';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
+	const getData = async () => {
+		try {
+			const value = await AsyncStorage.getItem('isLoggedIn');
+			if (value != null) {
+				navigation.replace('Feed');
+			} else {
+				navigation.replace('Login');
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
 	return (
 		<ImageBackground source={require('../img/bckg.jpg')} style={styles.bg}>
 			<ScrollView contentContainerStyle={styles.viewStyle}>
@@ -48,7 +62,7 @@ const Login = ({ navigation }) => {
 				<View>
 					<TouchableOpacity
 						style={styles.btnStyle}
-						onPress={() => navigation.replace('Signup')}>
+						onPress={() => getData()}>
 						<Text style={{ fontSize: 50, color: 'white' }}>
 							{'>'}
 						</Text>
