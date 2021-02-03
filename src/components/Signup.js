@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	headingStyle: {
-		fontSize: 60,
+		fontSize: 50,
 		color: 'white',
 	},
 	inputStyle: {

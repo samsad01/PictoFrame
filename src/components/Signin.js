@@ -89,8 +89,6 @@ const Signup = ({ navigation }) => {
 
 	useEffect(() => {
 		getData();
-		console.log(userName);
-		console.log('ID :', userID);
 	}, []);
 
 	return (
@@ -168,7 +166,7 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	headingStyle: {
-		fontSize: 60,
+		fontSize: 50,
 		color: 'white',
 	},
 	inputStyle: {

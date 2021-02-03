@@ -80,7 +80,7 @@ const Login = ({ navigation }) => {
 						<Text
 							style={{
 								color: 'white',
-								fontSize: 80,
+								fontSize: 60,
 								fontWeight: 'bold',
 							}}>
 							Welcomes
