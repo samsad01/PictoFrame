@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Text,
 	StyleSheet,
@@ -8,38 +8,142 @@ import {
 	StatusBar,
 	TouchableOpacity,
 	ScrollView,
+	Alert,
 } from 'react-native';
 import { Card, Image, Button } from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-crop-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const dimension = Dimensions.get('window');
 
-const AddPost = () => {
+const AddPost = ({ navigation }) => {
+	const postCollection = firestore().collection('Posts');
+
 	const [imageUri, setImageUri] = useState(
 		'https://superawesomevectors.com/wp-content/uploads/2017/10/person-outline-free-vector-icon-800x566.jpg',
 	);
+	const [userID, setUserID] = useState('');
+
+	const [base64String, setBase64String] = useState('');
+
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		navigation.addListener('tabPress', (e) => {
+			setImageUri(
+				'https://superawesomevectors.com/wp-content/uploads/2017/10/person-outline-free-vector-icon-800x566.jpg',
+			);
+		});
+		getUserID();
+	}, []);
+
+	const getUserID = async () => {
+		try {
+			const user = await AsyncStorage.getItem('userID');
+			setUserID(user);
+		} catch (e) {
+			// saving error
+			console.error(e);
+		}
+	};
 
 	const imageSelector = (src) => {
+		if (src === 'camera') {
+			ImagePicker.openCamera({
+				cropping: true,
+				includeBase64: true,
+			})
+				.then((image) => {
+					setImageUri(`data:image/jpg;base64,${image.data}`);
+					setBase64String(image.data);
+					//console.log(`data:image/jpg;base64,${image.data}`);
+				})
+				.catch((err) => console.error(err));
+		} else {
+			ImagePicker.openPicker({
+				cropping: true,
+				includeBase64: true,
+			})
+				.then((image) => {
+					setImageUri(`data:image/jpg;base64,${image.data}`);
+					setBase64String(image.data);
+					//console.log(`data:image/jpg;base64,${image.data}`);
+				})
+				.catch((err) => console.error(err));
+		}
+	};
+
+	const uploadImage = async () => {
+		setLoading(true);
 		try {
-			if (src === 'camera') {
-				ImagePicker.openCamera({
-					cropping: true,
-					includeBase64: true,
-				}).then((image) => {
-					setImageUri(`data:image/jpg;base64,${image.data}`);
-					console.log(`data:image/jpg;base64,${image.data}`);
-				});
-			} else {
-				ImagePicker.openPicker({
-					cropping: true,
-					includeBase64: true,
-				}).then((image) => {
-					setImageUri(`data:image/jpg;base64,${image.data}`);
-					console.log(`data:image/jpg;base64,${image.data}`);
-				});
-			}
-		} catch (err) {
+			const post = await postCollection.add({
+				user: userID,
+				comments: [],
+				likes: [],
+				image: '',
+			});
+			const postID = post._documentPath._parts[1];
+
+			const storageReference = storage().ref(
+				`${userID}/postImage/${postID}`,
+			);
+
+			const upload = storageReference.putString(base64String, 'base64', {
+				contentType: 'image/jpg',
+			});
+
+			upload.then(async () => {
+				console.log('Image uploaded to the bucket!');
+				const url = await storageReference.getDownloadURL();
+				await postCollection
+					.doc(postID)
+					.update({
+						image: url,
+					})
+					.then(() => {
+						console.log(`post updated`);
+						Alert.alert(
+							'Post',
+							'Image uploaded successfully',
+							[
+								{
+									text: 'OK',
+									onPress: () => setLoading(false),
+								},
+							],
+							{ cancelable: false },
+						);
+					})
+					.catch((err) => {
+						Alert.alert(
+							'Error',
+							'Something went wrong!! Please try again',
+							[
+								{
+									text: 'OK',
+									onPress: () => setLoading(false),
+								},
+							],
+							{ cancelable: false },
+						);
+						console.error(err);
+					});
+			});
+		} catch (error) {
+			Alert.alert(
+				'Error',
+				'Something went wrong!! Please try again',
+				[
+					{
+						text: 'OK',
+						onPress: () => setLoading(false),
+					},
+				],
+				{ cancelable: false },
+			);
 			console.error(err);
 		}
 	};
@@ -88,23 +192,27 @@ const AddPost = () => {
 					<></>
 				) : (
 					<View style={styles.uploadWrapper}>
-						<TouchableOpacity
-							style={styles.uploadButton}
-							onPress={() => imageSelector('library')}>
-							<MaterialCommunityIcons
-								name="cloud-upload"
-								size={20}
-								color="white"
-								style={styles.buttonIcon}
-							/>
-							<Text
-								style={{
-									...styles.buttonText,
-									color: '#fff',
-								}}>
-								Upload
-							</Text>
-						</TouchableOpacity>
+						<Button
+							onPress={() => uploadImage()}
+							icon={
+								<MaterialCommunityIcons
+									name="cloud-upload"
+									size={20}
+									color="#ffff00"
+									style={styles.buttonIcon}
+								/>
+							}
+							title="Upload"
+							type="outline"
+							buttonStyle={{
+								borderColor: '#ffff00',
+								paddingVertical: 10,
+								paddingHorizontal: 30,
+							}}
+							loadingProps={{ color: '#ffff00' }}
+							titleStyle={{ color: '#ffff00' }}
+							loading={loading}
+						/>
 					</View>
 				)}
 			</ScrollView>
@@ -125,7 +233,7 @@ const styles = StyleSheet.create({
 	},
 	imageCardView: {
 		backgroundColor: '#111',
-		height: dimension.height / 2,
+		height: dimension.height / 2.3,
 	},
 	actionView: {
 		alignItems: 'center',
@@ -168,7 +276,6 @@ const styles = StyleSheet.create({
 		width: '40%',
 	},
 	uploadWrapper: {
-		marginTop: 10,
 		width: dimension.width,
 		justifyContent: 'center',
 		alignItems: 'center',
