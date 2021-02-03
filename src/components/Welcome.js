@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -8,21 +8,59 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import TypeWriter from 'react-native-typewriter';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
-	const getData = async () => {
+	// signin and signout checking
+	const [initializing, setInitializing] = useState(true);
+	const [hasEmail, setHasEmail] = useState('');
+	const [user, setUser] = useState();
+	const [userID, setUserID] = useState();
+
+	const onAuthStateChanged = async (user) => {
+		setUser(user);
+		if (initializing) setInitializing(false);
 		try {
 			const value = await AsyncStorage.getItem('isLoggedIn');
 			if (value != null) {
-				navigation.replace('Feed');
-			} else {
-				navigation.replace('Login');
+				setUserID(value);
+				firestore()
+					.collection('Users')
+					.doc(`${value}`)
+					.get()
+					.then((snapshot) => {
+						if (snapshot.exists) {
+							setHasEmail(snapshot._data.email);
+							// console.log(snapshot._data.email);
+						}
+					})
+					.catch((e) => console.log(e));
 			}
 		} catch (e) {
 			console.log(e);
 		}
 	};
+
+	const handleNavigation = () => {
+		if (user) {
+			navigation.replace('Feed');
+		} else {
+			if (hasEmail) {
+				navigation.replace('Signin');
+			} else {
+				navigation.replace('Signup');
+			}
+		}
+	};
+
+	useEffect(() => {
+		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+		return subscriber;
+	}, []);
+
+	if (initializing) return null;
 
 	return (
 		<ImageBackground source={require('../img/bckg.jpg')} style={styles.bg}>
@@ -62,7 +100,7 @@ const Login = ({ navigation }) => {
 				<View>
 					<TouchableOpacity
 						style={styles.btnStyle}
-						onPress={() => getData()}>
+						onPress={() => handleNavigation()}>
 						<Text style={{ fontSize: 50, color: 'white' }}>
 							{'>'}
 						</Text>

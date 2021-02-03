@@ -60,8 +60,8 @@ const Card = ({ navigation }) => {
 				style={styles.postImage}
 			/>
 			<View style={styles.likeCommentView}>
-				<Text style={styles.likeCommentText}>Likes: 60</Text>
-				<Text style={styles.likeCommentText}>Comments: 60</Text>
+				<Text style={styles.likeCommentText}>Likes: 108</Text>
+				<Text style={styles.likeCommentText}>Comments: 108</Text>
 			</View>
 			<View style={styles.actionView} iconContainerStyle={{ flex: 1 }}>
 				<TouchableOpacity style={styles.button}>

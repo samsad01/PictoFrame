@@ -26,7 +26,7 @@ const Signup = ({ navigation }) => {
 				setUserID(value);
 				firestore()
 					.collection('Users')
-					.doc(`${userID}`)
+					.doc(`${value}`)
 					.get()
 					.then((snapshot) => {
 						if (snapshot.exists) {
@@ -73,7 +73,10 @@ const Signup = ({ navigation }) => {
 						);
 						navigation.replace('Feed');
 					} else {
-						ToastAndroid.show('Try Again', ToastAndroid.LONG);
+						ToastAndroid.show(
+							"Email hasn't verified yet. Check you mail",
+							ToastAndroid.LONG,
+						);
 					}
 				})
 				.catch((e) => {
@@ -86,6 +89,8 @@ const Signup = ({ navigation }) => {
 
 	useEffect(() => {
 		getData();
+		console.log(userName);
+		console.log('ID :', userID);
 	}, []);
 
 	return (
