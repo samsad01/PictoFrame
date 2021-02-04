@@ -79,9 +79,13 @@ const EditProfile = ({ route, navigation }) => {
 				cropping: true,
 			})
 				.then(async (image) => {
-					const url = await storageReference.putFile(image.path);
-					setUserDetails((prev) => {
-						return { ...prev, avatar: url };
+					const upload = storageReference.putFile(image.path);
+					upload.then(async () => {
+						const url = await storageReference.getDownloadURL();
+						console.log(url);
+						setUserDetails((prev) => {
+							return { ...prev, avatar: url };
+						});
 					});
 				})
 				.catch((err) => console.error(err));
@@ -90,9 +94,16 @@ const EditProfile = ({ route, navigation }) => {
 				cropping: true,
 			})
 				.then(async (image) => {
-					const url = await storageReference.putFile(image.path);
-					setUserDetails((prev) => {
-						return { ...prev, avatar: url };
+					const upload = storageReference.putFile(image.path);
+					upload.then(async () => {
+						const url = await storageReference.getDownloadURL();
+						// console.log(url);
+						setUserDetails((prev) => {
+							return { ...prev, avatar: url };
+						});
+						await UserCollection.doc(userDetails.id).update({
+							dp: url,
+						});
 					});
 				})
 				.catch((err) => console.error(err));
@@ -121,6 +132,7 @@ const EditProfile = ({ route, navigation }) => {
 					title="DP"
 					imageProps={{ resizeMode: 'contain' }}
 					activeOpacity={0.5}
+					overlayContainerStyle={{ backgroundColor: 'white' }}
 					onPress={() => setIsVisible(true)}>
 					<Accessory size={30} />
 				</Avatar>

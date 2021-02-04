@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -7,10 +7,90 @@ import {
 	TouchableOpacity,
 	ScrollView,
 	ImageBackground,
+	ToastAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
-const Signup = ({ navigation }) => {
-	const [name, setName] = useState('Bhaskar');
+const Signin = ({ navigation }) => {
+	const [userName, setUserName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [userID, setUserID] = useState('');
+
+	const getData = async () => {
+		try {
+			const value = await AsyncStorage.getItem('userID');
+			if (value != null) {
+				setUserID(value);
+				firestore()
+					.collection('Users')
+					.doc(`${value}`)
+					.get()
+					.then((snapshot) => {
+						if (snapshot.exists) {
+							setUserName(snapshot._data.name);
+						}
+					})
+					.catch((e) => console.log(e));
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
+	const validateEmail = (email) => {
+		const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		const result = re.test(email);
+		if (!result) {
+			ToastAndroid.show('Invalid email', ToastAndroid.LONG);
+		}
+		return result;
+	};
+
+	const validatePassword = (pass) => {
+		const result = String(pass).length > 5;
+		if (!result) {
+			ToastAndroid.show(
+				'Password must have minimum length of 6',
+				ToastAndroid.LONG,
+			);
+		}
+		return result;
+	};
+
+	const userDetails = () => {
+		if (validateEmail(email) && validatePassword(password)) {
+			auth()
+				.signInWithEmailAndPassword(email, password)
+				.then(() => {
+					const user = auth().currentUser;
+					AsyncStorage.setItem('userID', user.uid);
+					if (user.emailVerified) {
+						ToastAndroid.show(
+							`Welcome, ${userName}`,
+							ToastAndroid.LONG,
+						);
+						navigation.replace('Feed');
+					} else {
+						ToastAndroid.show(
+							"Email hasn't verified yet. Check you mail",
+							ToastAndroid.LONG,
+						);
+					}
+				})
+				.catch((e) => {
+					console.log(e);
+				});
+		} else {
+			console.log('Fail');
+		}
+	};
+
+	useEffect(() => {
+		getData();
+	}, []);
 
 	return (
 		<ImageBackground
@@ -23,7 +103,9 @@ const Signup = ({ navigation }) => {
 				}}>
 				<View
 					style={{ alignItems: 'center', justifyContent: 'center' }}>
-					<Text style={styles.headingStyle}>Hey, {name}</Text>
+					<Text style={styles.headingStyle}>
+						Hey, {userName.split(' ')[0]}
+					</Text>
 				</View>
 				<View style={styles.inputStyle}>
 					{/* <TextInput
@@ -35,11 +117,16 @@ const Signup = ({ navigation }) => {
 						placeholder="Email"
 						textAlign="center"
 						style={styles.textInputStyle}
+						keyboardType="email-address"
+						onChangeText={(d) => setEmail(d)}
 					/>
 					<TextInput
 						placeholder="Password"
 						textAlign="center"
 						style={styles.textInputStyle}
+						secureTextEntry
+						keyboardType="default"
+						onChangeText={(d) => setPassword(d)}
 					/>
 				</View>
 				<View>
@@ -56,7 +143,7 @@ const Signup = ({ navigation }) => {
 				</View>
 				<TouchableOpacity
 					style={styles.signUpStyle}
-					onPress={() => navigation.navigate('Feed')}>
+					onPress={() => userDetails()}>
 					<Text style={{ fontSize: 20, color: 'white' }}>
 						Sign In
 					</Text>
@@ -66,7 +153,7 @@ const Signup = ({ navigation }) => {
 	);
 };
 
-export default Signup;
+export default Signin;
 
 const styles = StyleSheet.create({
 	lowerPart: {
@@ -80,7 +167,7 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	headingStyle: {
-		fontSize: 60,
+		fontSize: 50,
 		color: 'white',
 	},
 	inputStyle: {

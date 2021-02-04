@@ -4,7 +4,6 @@ import {
 	View,
 	StyleSheet,
 	Dimensions,
-	SafeAreaView,
 	Modal,
 	TouchableOpacity,
 } from 'react-native';
@@ -13,6 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import ImageViewer from 'react-native-image-zoom-viewer';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
 const dimensions = Dimensions.get('window');
 
@@ -48,6 +48,10 @@ const Profile = ({ navigation }) => {
 		setUserDetails((prev) => {
 			return { ...prev, id: userId };
 		});
+		PostCollection.where('user', '==', userId).onSnapshot(
+			getAllPosts,
+			onError,
+		);
 		UserCollection.doc(userId).onSnapshot(getUserDetails, onError);
 	};
 
@@ -65,11 +69,6 @@ const Profile = ({ navigation }) => {
 				description: user.description,
 			};
 		});
-
-		PostCollection.orderBy('user')
-			.startAt(userDetails.id)
-			.endAt(userDetails.id + '\uf8ff')
-			.onSnapshot(getAllPosts, onError);
 	};
 
 	const getAllPosts = (response) => {
@@ -87,6 +86,14 @@ const Profile = ({ navigation }) => {
 			.catch((err) => console.error(err));
 	};
 
+	const handleLogout = () => {
+		AsyncStorage.clear();
+		auth()
+			.signOut()
+			.then(() => navigation.replace('Signin'))
+			.catch((e) => console.error(e));
+	};
+
 	return (
 		<ScrollView style={styles.scrollView}>
 			<View style={styles.avatarWrapper}>
@@ -94,7 +101,7 @@ const Profile = ({ navigation }) => {
 					size="large"
 					rounded
 					title="DP"
-					overlayContainerStyle={{ backgroundColor: 'grey' }}
+					overlayContainerStyle={{ backgroundColor: 'white' }}
 					imageProps={{ resizeMode: 'contain' }}
 					source={{ uri: userDetails.avatar }}
 				/>
@@ -141,7 +148,9 @@ const Profile = ({ navigation }) => {
 						Edit Profile
 					</Text>
 				</TouchableOpacity>
-				<TouchableOpacity style={styles.logoutButton}>
+				<TouchableOpacity
+					style={styles.logoutButton}
+					onPress={() => handleLogout()}>
 					<Text
 						style={{
 							color: '#b22222',
@@ -163,7 +172,7 @@ const Profile = ({ navigation }) => {
 				{allPosts.map((post) => (
 					<View key={post.id} style={styles.innerImageWrapper}>
 						<Image
-							style={styles.img}
+							containerStyle={styles.img}
 							source={{
 								uri: post.image,
 							}}
@@ -238,17 +247,19 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 15,
 	},
 	innerImageWrapper: {
-		borderColor: '#666666',
+		borderColor: '#403e40',
 		borderWidth: 0.7,
 	},
 	outerImageWrapper: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		backgroundColor: '#111',
+		justifyContent: 'center',
 	},
 	img: {
 		height: 180,
-		width: dimensions.width / 2 - 23,
+		width: dimensions.width / 2 - 20,
+		backgroundColor: '#d5d3d5',
 	},
 	editProfileButton: {
 		alignItems: 'center',

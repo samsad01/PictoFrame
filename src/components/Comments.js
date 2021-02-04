@@ -18,7 +18,7 @@ import CommentBar from './CommentBar';
 const dimensions = Dimensions.get('window');
 
 const Comments = ({ route }) => {
-	const { post, user } = route.params;
+	const { post, currentUserID } = route.params;
 	const postsCollection = firestore().collection('Posts');
 
 	const [currentComment, setCurrentComment] = useState('');
@@ -46,7 +46,7 @@ const Comments = ({ route }) => {
 				comments: firestore.FieldValue.arrayUnion({
 					commentTime: `${currentTime}`,
 					data: currentComment,
-					userID: user.id,
+					userID: currentUserID,
 				}),
 			})
 			.then(() => {

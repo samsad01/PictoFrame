@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {
 	View,
 	Text,
-	ScrollView,
 	Dimensions,
 	StyleSheet,
 	TouchableOpacity,
 	Image,
 } from 'react-native';
-import { Avatar, Divider, Button, Icon } from 'react-native-elements';
+import { Avatar, Icon } from 'react-native-elements';
 import Share from 'react-native-share';
 import FaIcon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
@@ -21,10 +20,7 @@ const handleShare = async (url) => {
 	RNFetchBlob.config({
 		fileCache: true,
 	})
-		.fetch(
-			'GET',
-			'https://firebasestorage.googleapis.com/v0/b/pictoframe-be0ff.appspot.com/o/PFeHZyfIlPv6r4a4T5mO%2FpostImage%2Fop8fVM1pQ8xiElriZ5tE?alt=media&token=e91158c3-60cd-46c1-bba8-5408e6624fe8',
-		)
+		.fetch('GET', url)
 		// the image is now dowloaded to device's storage
 		.then((resp) => {
 			// the image path you can use it directly with Image component
@@ -35,12 +31,12 @@ const handleShare = async (url) => {
 			var base64Data = `data:image/png;base64,` + base64Data;
 			// here's base64 encoded image
 			await Share.open({
-				message: 'Hey, Checkout my post on Pictoframe',
+				message: 'Hey, Checkout my new post on Pictoframe',
 				title: 'Share using',
 				url: base64Data,
 			});
 			// remove the file from storage
-			return fs.unlink(imagePath);
+			return RNFetchBlob.fs.unlink(imagePath);
 		})
 		.catch((err) => console.error(err));
 };
@@ -54,14 +50,19 @@ const Card = ({ navigation, post, currentUserID }) => {
 		id: '',
 	});
 
+	const handleResponse = (response) => {
+		setUser({ ...response.data(), id: response.id });
+	};
+
+	const onError = (err) => {
+		console.error(err);
+	};
+
 	const getUserDetails = () => {
 		firestore()
 			.collection('Users')
 			.doc(post.user)
-			.get()
-			.then((data) => {
-				setUser({ ...data.data(), id: data.id });
-			});
+			.onSnapshot(handleResponse, onError);
 	};
 
 	const handleLike = () => {
@@ -70,14 +71,16 @@ const Card = ({ navigation, post, currentUserID }) => {
 				.collection('Posts')
 				.doc(post.id)
 				.update({
-					likes: post.likes.filter((id) => id != user.id),
+					likes: post.likes.filter((id) => id != currentUserID),
 				});
 			setLiked(false);
 		} else {
 			firestore()
 				.collection('Posts')
 				.doc(post.id)
-				.update({ likes: firestore.FieldValue.arrayUnion(user.id) });
+				.update({
+					likes: firestore.FieldValue.arrayUnion(currentUserID),
+				});
 			setLiked(true);
 		}
 	};
@@ -141,14 +144,14 @@ const Card = ({ navigation, post, currentUserID }) => {
 					onPress={() => {
 						navigation.navigate('Comments', {
 							post: post,
-							user: user,
+							currentUserID: currentUserID,
 						});
 					}}>
 					<FaIcon name="comments-o" size={30} color="#CCCCCC" />
 				</TouchableOpacity>
 				<TouchableOpacity
 					style={styles.button}
-					onPress={() => handleShare('')}>
+					onPress={() => handleShare(post.image)}>
 					<FaIcon name="share-square-o" size={30} color="#CCCCCC" />
 				</TouchableOpacity>
 			</View>
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
 		height: 270,
 		marginVertical: 15,
 		width: dimensions.width,
-		backgroundColor: '#fff',
+		backgroundColor: '#d5d3d5',
 	},
 	userName: {
 		marginLeft: 10,
