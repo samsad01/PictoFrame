@@ -21,7 +21,7 @@ const EditProfile = ({ route, navigation }) => {
 	const [userDetails, setUserDetails] = useState({
 		id: '',
 		avatar:
-			'https://firebasestorage.googleapis.com/v0/b/pictoframe-be0ff.appspot.com/o/PFeHZyfIlPv6r4a4T5mO%2FpostImage%2FaOtQFm390gvT8VQRexEJ?alt=media&token=7295ef2b-6769-4e02-8f36-a5e50786c7c0',
+			'https://image.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg',
 		name: '',
 		description: '',
 	});
