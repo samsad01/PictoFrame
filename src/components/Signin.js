@@ -80,8 +80,32 @@ const Signin = ({ navigation }) => {
 						);
 					}
 				})
-				.catch((e) => {
-					console.log(e);
+				.catch((error) => {
+					if (error.code === 'auth/email-already-in-use') {
+						ToastAndroid.show(
+							'That email address is already in use!',
+							ToastAndroid.LONG,
+						);
+						console.log('That email address is already in use!');
+					}
+
+					if (error.code === 'auth/invalid-email') {
+						ToastAndroid.show(
+							'That email address is invalid!',
+							ToastAndroid.LONG,
+						);
+						console.log('That email address is invalid!');
+					}
+
+					if (error.code === 'auth/user-not-found') {
+						ToastAndroid.show(
+							'Please check your email address and try again',
+							ToastAndroid.LONG,
+						);
+						console.log('User not found! Try again!');
+					}
+
+					// console.error(error);
 				});
 		} else {
 			console.log('Fail');
