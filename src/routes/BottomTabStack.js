@@ -62,6 +62,16 @@ const BottomTabStack = () => {
 					),
 				}}
 			/>
+
+			<Tab.Screen
+				name="Chat"
+				children={() => <Chat currentUser={userDetails} />}
+				options={{
+					tabBarIcon: ({ color }) => (
+						<Entypo name="chat" color={color} size={26} />
+					),
+				}}
+			/>
 			<Tab.Screen
 				name="Profile"
 				component={Profile}
@@ -72,15 +82,6 @@ const BottomTabStack = () => {
 							color={color}
 							size={26}
 						/>
-					),
-				}}
-			/>
-			<Tab.Screen
-				name="Chat"
-				children={() => <Chat currentUser={userDetails} />}
-				options={{
-					tabBarIcon: ({ color }) => (
-						<Entypo name="chat" color={color} size={26} />
 					),
 				}}
 			/>
