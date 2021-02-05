@@ -45,6 +45,7 @@ const AppStack = () => {
 					component={BottomTabStack}
 					options={({ route }) => ({
 						headerShown: true,
+						headerLeft: null,
 						headerTitle: getHeaderTitle(route),
 					})}
 				/>
