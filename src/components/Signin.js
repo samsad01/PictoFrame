@@ -19,26 +19,26 @@ const Signin = ({ navigation }) => {
 	const [password, setPassword] = useState('');
 	const [userID, setUserID] = useState('');
 
-	const getData = async () => {
-		try {
-			const value = await AsyncStorage.getItem('userID');
-			if (value != null) {
-				setUserID(value);
-				firestore()
-					.collection('Users')
-					.doc(`${value}`)
-					.get()
-					.then((snapshot) => {
-						if (snapshot.exists) {
-							setUserName(snapshot._data.name);
-						}
-					})
-					.catch((e) => console.log(e));
-			}
-		} catch (e) {
-			console.log(e);
-		}
-	};
+	// const getData = async () => {
+	// 	try {
+	// 		const value = await AsyncStorage.getItem('userID');
+	// 		if (value != null) {
+	// 			setUserID(value);
+	// 			firestore()
+	// 				.collection('Users')
+	// 				.doc(`${value}`)
+	// 				.get()
+	// 				.then((snapshot) => {
+	// 					if (snapshot.exists) {
+	// 						setUserName(snapshot._data.name);
+	// 					}
+	// 				})
+	// 				.catch((e) => console.log(e));
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 	}
+	// };
 
 	const validateEmail = (email) => {
 		const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -64,14 +64,22 @@ const Signin = ({ navigation }) => {
 		if (validateEmail(email) && validatePassword(password)) {
 			auth()
 				.signInWithEmailAndPassword(email, password)
-				.then(() => {
+				.then(async () => {
 					const user = auth().currentUser;
 					AsyncStorage.setItem('userID', user.uid);
 					if (user.emailVerified) {
-						ToastAndroid.show(
-							`Welcome, ${userName}`,
-							ToastAndroid.LONG,
-						);
+						await firestore()
+							.collection('Users')
+							.doc(user.uid)
+							.get()
+							.then((snap) => {
+								setUserName(snap.data().name);
+								ToastAndroid.show(
+									`Welcome, ${snap.data().name}`,
+									ToastAndroid.LONG,
+								);
+							})
+							.catch((err) => console.error(err));
 						navigation.replace('Feed');
 					} else {
 						ToastAndroid.show(
@@ -87,34 +95,40 @@ const Signin = ({ navigation }) => {
 							ToastAndroid.LONG,
 						);
 						console.log('That email address is already in use!');
-					}
-
-					if (error.code === 'auth/invalid-email') {
+					} else if (error.code === 'auth/invalid-email') {
 						ToastAndroid.show(
 							'That email address is invalid!',
 							ToastAndroid.LONG,
 						);
 						console.log('That email address is invalid!');
-					}
-
-					if (error.code === 'auth/user-not-found') {
+					} else if (error.code === 'auth/user-not-found') {
 						ToastAndroid.show(
 							'Please check your email address and try again',
 							ToastAndroid.LONG,
 						);
 						console.log('User not found! Try again!');
+					} else if (error.code === 'auth/wrong-password') {
+						ToastAndroid.show(
+							'Wrong password!! Please try again',
+							ToastAndroid.LONG,
+						);
+						console.log(`wrong password`);
+					} else {
+						ToastAndroid.show(
+							'Internal server error. Please try after sometime!',
+							ToastAndroid.LONG,
+						);
+						console.log(error.code);
 					}
-
-					// console.error(error);
 				});
 		} else {
 			console.log('Fail');
 		}
 	};
 
-	useEffect(() => {
-		getData();
-	}, []);
+	// useEffect(() => {
+	// 	getData();
+	// }, []);
 
 	return (
 		<ImageBackground
@@ -132,11 +146,6 @@ const Signin = ({ navigation }) => {
 					</Text>
 				</View>
 				<View style={styles.inputStyle}>
-					{/* <TextInput
-						placeholder="Name"
-						textAlign="center"
-						style={styles.textInputStyle}
-					/> */}
 					<TextInput
 						placeholder="Email"
 						textAlign="center"
@@ -199,18 +208,14 @@ const styles = StyleSheet.create({
 	},
 	textInputStyle: {
 		backgroundColor: 'rgba(255, 255, 255, 0.5)',
-		padding: 20,
+		padding: 15,
 		width: 290,
 		borderWidth: 2,
 		borderColor: 'white',
 		borderRadius: 10,
 		opacity: 1,
 		marginBottom: 20,
-		// shadowColor: '#000',
-		// shadowOffset: { width: 0, height: 1 },
-		// shadowOpacity: 0.8,
-		// shadowRadius: 2,
-		// elevation: 5,
+		fontSize: 17,
 	},
 	signUpStyle: {
 		backgroundColor: 'transparent',
@@ -221,11 +226,6 @@ const styles = StyleSheet.create({
 		borderWidth: 2,
 		borderColor: 'white',
 		borderRadius: 10,
-		// shadowColor: '#000',
-		// shadowOffset: { width: 0, height: 1 },
-		// shadowOpacity: 0.8,
-		// shadowRadius: 2,
-		// elevation: 5,
 	},
 	linearGradient: {
 		flex: 2,

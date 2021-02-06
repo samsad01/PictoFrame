@@ -25,6 +25,12 @@ const Chat = ({ currentUser }) => {
 		setMessages(tempArray);
 	};
 
+	const handleDelete = async (message) => {
+		if (currentUser._id === message.user._id) {
+			await chatsCollection.doc(message._id).delete();
+		}
+	};
+
 	const getAllMessages = async () => {
 		chatsCollection.onSnapshot(handleSnapshot, (err) => console.error(err));
 	};
@@ -50,6 +56,7 @@ const Chat = ({ currentUser }) => {
 				onSend={(newMessage) => onSend(newMessage)}
 				user={currentUser}
 				renderUsernameOnMessage={true}
+				onLongPress={(context, message) => handleDelete(message)}
 			/>
 		</View>
 	);

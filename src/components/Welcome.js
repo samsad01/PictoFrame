@@ -6,6 +6,7 @@ import {
 	ImageBackground,
 	ScrollView,
 	TouchableOpacity,
+	ToastAndroid,
 } from 'react-native';
 import TypeWriter from 'react-native-typewriter';
 import auth from '@react-native-firebase/auth';
@@ -18,6 +19,7 @@ const Login = ({ navigation }) => {
 	const [hasEmail, setHasEmail] = useState('');
 	const [user, setUser] = useState();
 	const [userID, setUserID] = useState();
+	const [userName, setUserName] = useState('');
 
 	const onAuthStateChanged = async (user) => {
 		setUser(user);
@@ -33,6 +35,7 @@ const Login = ({ navigation }) => {
 					.then((snapshot) => {
 						if (snapshot.exists) {
 							setHasEmail(snapshot._data.email);
+							setUserName(snapshot.data().name);
 							// console.log(snapshot._data.email);
 						}
 					})
@@ -46,6 +49,7 @@ const Login = ({ navigation }) => {
 	const handleNavigation = () => {
 		if (user) {
 			navigation.replace('Feed');
+			ToastAndroid.show(`Welcome, ${userName}`, ToastAndroid.LONG);
 		} else {
 			if (hasEmail) {
 				navigation.replace('Signin');
