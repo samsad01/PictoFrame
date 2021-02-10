@@ -12,6 +12,7 @@ import TypeWriter from 'react-native-typewriter';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 const Login = ({ navigation }) => {
 	// signin and signout checking
@@ -67,47 +68,23 @@ const Login = ({ navigation }) => {
 	if (initializing) return null;
 
 	return (
-		<ImageBackground source={require('../img/bckg.jpg')} style={styles.bg}>
+		<ImageBackground
+			source={require('../img/Mypost.jpg')}
+			style={styles.bg}>
 			<ScrollView contentContainerStyle={styles.viewStyle}>
-				<View style={{ justifyContent: 'center' }}>
-					<TypeWriter typing={1}>
-						<Text
-							style={{
-								color: 'white',
-								fontSize: 40,
-								fontWeight: 'bold',
-							}}>
-							PictoFrame
-						</Text>
-					</TypeWriter>
-					<TypeWriter typing={1}>
-						<Text
-							style={{
-								color: 'white',
-								fontSize: 60,
-								fontWeight: 'bold',
-							}}>
-							Welcomes
-						</Text>
-					</TypeWriter>
-					<TypeWriter typing={1}>
-						<Text
-							style={{
-								color: 'white',
-								fontSize: 50,
-								fontWeight: 'bold',
-							}}>
-							you
-						</Text>
-					</TypeWriter>
-				</View>
+				<View style={{ justifyContent: 'center' }}></View>
 				<View>
 					<TouchableOpacity
 						style={styles.btnStyle}
 						onPress={() => handleNavigation()}>
-						<Text style={{ fontSize: 50, color: 'white' }}>
+						{/* <Text style={{ fontSize: 50, color: 'white' }}>
 							{'>'}
-						</Text>
+						</Text> */}
+						<SimpleLineIcons
+							name="arrow-right-circle"
+							size={60}
+							color="white"
+						/>
 					</TouchableOpacity>
 				</View>
 			</ScrollView>
@@ -129,14 +106,12 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	btnStyle: {
-		marginTop: 200,
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: 1,
-		paddingHorizontal: 25,
-		backgroundColor: 'transparent',
-		borderWidth: 2,
-		borderColor: 'white',
-		borderRadius: 50,
+		alignSelf: 'center',
+		marginTop: 600,
+		// borderStyle: 'solid',
+		// borderColor: 'rgba(255, 255, 255, 0.4)',
+		// borderWidth: 10,
+		// borderRadius: 70,
+		// padding: 0,
 	},
 });

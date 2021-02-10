@@ -164,7 +164,7 @@ const Signin = ({ navigation }) => {
 				</View>
 				<View>
 					<Text style={{ marginTop: 5 }}>
-						<Text style={{ color: '#000' }}>
+						<Text style={{ color: 'gray' }}>
 							Have'nt registered yet?
 						</Text>{' '}
 						<Text

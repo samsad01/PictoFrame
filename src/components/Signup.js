@@ -158,7 +158,7 @@ const Signup = ({ navigation }) => {
 				</View>
 				<View>
 					<Text style={{ marginTop: 5 }}>
-						<Text style={{ color: '#fff700' }}>
+						<Text style={{ color: '#a30000', fontWeight: 'bold' }}>
 							Already have an account?
 						</Text>{' '}
 						<Text
